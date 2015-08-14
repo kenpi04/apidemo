@@ -10038,3 +10038,5 @@ ul.icons li [class*=" icon-"] {
 .icon-folder-open-alt:before {
   content: "\f115";
 }
+.f_error{border: solid 1px red !important}
+.control-label abbr{color:red;}

@@ -5,9 +5,9 @@
  * Common DB utilities
  */
 
-define('USERS_TABLE', 'ppusers');
-define('ORDERS_TABLE', 'pporders');
+
 define('KEY_TABLE', 'key_info');
+define('PRICE_TABLE','prices');
 
 /**
  * Returns a new mysql conncetion
@@ -16,8 +16,27 @@ define('KEY_TABLE', 'key_info');
  */
 function getConnection() {
 	
-	$usersTableCreateQuery = "CREATE TABLE IF NOT EXISTS `ppusers` (`user_id` int(11) NOT NULL AUTO_INCREMENT,  `email` varchar(254) DEFAULT NULL,  `password` varchar(50) DEFAULT NULL,  `creditcard_id` varchar(40) DEFAULT NULL,  PRIMARY KEY (`user_id`),  UNIQUE KEY `email` (`email`)) ENGINE=InnoDB DEFAULT CHARSET=utf8;";
-	$ordersTableCreateQuery = "CREATE TABLE IF NOT EXISTS `pporders` (`order_id` int(11) NOT NULL AUTO_INCREMENT,  `user_id` varchar(254) DEFAULT NULL,  `payment_id` varchar(50) DEFAULT NULL,  `state` varchar(20) DEFAULT NULL,  `amount` varchar(20) DEFAULT NULL,  `description` varchar(40) DEFAULT NULL,  `created_time` datetime DEFAULT NULL,   PRIMARY KEY (`order_id`)) ENGINE=InnoDB DEFAULT CHARSET=utf8;";
+$tableKey="CREATE TABLE IF NOT EXISTS `key_info` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `email` varchar(60) NOT NULL,
+  `IME_Code` varchar(15) NOT NULL,
+  `Device_Id` varchar(60) NOT NULL,
+  `Type` smallint(6) NOT NULL,
+  `key_code` varchar(50) NOT NULL,
+  `CreateDate` datetime NOT NULL,
+  `PayerId` varchar(50) DEFAULT NULL,
+  `PaymentState` varchar(10) DEFAULT NULL,
+  `DateLimit` int NOT NULL,
+   `Price` float NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=7";
+$tablePrice="CREATE TABLE IF NOT EXISTS `prices` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `MonthNumber` int NOT NULL,
+  `Price` float NOT NULL,
+ 
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=7";
 
 	$link = @mysql_connect(MYSQL_HOST, MYSQL_USERNAME, MYSQL_PASSWORD);
 	if(!$link) {
@@ -29,7 +48,7 @@ function getConnection() {
 				'. Please check connection parameters in app/bootstrap.php');
 	}
 	
-	mysql_query($usersTableCreateQuery, $link);
-	mysql_query($ordersTableCreateQuery, $link);
+	mysql_query($tableKey, $link);
+	mysql_query($tablePrice,$link);
 	return $link;
 }

@@ -95,3 +95,27 @@ function parseApiError($errorJson) {
 	}	
 	return $msg;
 }
+function isNull($str)
+{
+	return !isset($string) &&trim($str)=='';
+}
+function setOrderInfo($orderinfo)
+{
+	$_SESSION["orderinfo"]=$orderinfo;
+}
+function getOrderInfo()
+{
+	if(isset($_SESSION["orderinfo"]))
+		return $_SESSION["orderinfo"];
+	return null;
+}
+function isOrdered()
+{
+	return isset($_SESSION['orderinfo']);
+}
+function apiAuth($user,$pass)
+{
+    return($user==API_USER&&$pass==API_PASSWORD);
+    
+}
+$_GET_A = array_change_key_case($_GET, CASE_LOWER);

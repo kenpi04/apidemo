@@ -6,11 +6,9 @@ if(!file_exists(__DIR__ .'/../vendor/autoload.php')) {
 	exit(1);
 }
 require_once __DIR__ . '/../vendor/autoload.php';
-require_once __DIR__ . '/common/user.php';
-require_once __DIR__ . '/common/order.php';
 require_once __DIR__ . '/common/paypal.php';
 require_once __DIR__ . '/common/util.php';
-
+require_once __DIR__ . '/common/key.php';
 use PayPal\Rest\ApiContext;
 use PayPal\Auth\OAuthTokenCredential;
 
@@ -18,7 +16,12 @@ use PayPal\Auth\OAuthTokenCredential;
 define('MYSQL_HOST', 'localhost');
 define('MYSQL_USERNAME', 'root');
 define('MYSQL_PASSWORD', '12345');
-define('MYSQL_DB', 'paypal_pizza_app');
+define('MYSQL_DB', 'api_data');
+define('API_USER','admin');
+define('API_PASSWORD','admin');
+define('ADMIN_USER','admin_123');
+define('ADMIN_PASS', '12345%$#@!');
+        
 
 return getApiContext();
 

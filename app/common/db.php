@@ -26,7 +26,7 @@ $tableKey="CREATE TABLE IF NOT EXISTS `key_info` (
   `CreateDate` datetime NOT NULL,
   `PayerId` varchar(50) DEFAULT NULL,
   `PaymentState` varchar(10) DEFAULT NULL,
-  `DateLimit` int NOT NULL,
+  `DateLimit` datetime NOT NULL,
    `Price` float NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=7";

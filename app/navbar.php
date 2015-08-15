@@ -7,8 +7,8 @@ require_once  'bootstrap.php';
 	<div class='navbar-inner'>
 		<div class='container'>
 			<ul class="nav navbar-nav">
-        <li><a href="../manage/index.php">Manage key</a></li>
-        <li><a href="../manage/updateprice.php">Update price</a></li>
+        <li><a href="<?php echo HOST; ?>manage/index.php">Manage key</a></li>
+        <li><a href="<?php echo HOST; ?>manage/updateprice.php">Update price</a></li>
         </ul>
 		</div>
 	</div>

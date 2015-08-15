@@ -21,6 +21,7 @@ define('API_USER','admin');
 define('API_PASSWORD','admin');
 define('ADMIN_USER','admin_123');
 define('ADMIN_PASS', '12345%$#@!');
+define('HOST','http://dungvt-002-site8.myasp.net/app/');
         
 
 return getApiContext();

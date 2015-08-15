@@ -285,7 +285,7 @@ function InsertUpdatePrice($price,$numMonth, $id=0)
     }
     else
     {
-        $query=sprintf("Update %s set Price=%f,Month=%d where id=%d",PRICE_TABLE,$price,$numMonth,$id);
+        $query=sprintf("Update %s set Price=%f,MonthNumber=%d where id=%d",PRICE_TABLE,$price,$numMonth,$id);
     }
     $result = mysql_query($query, $conn);
     if(!$result) {
@@ -299,7 +299,7 @@ function InsertUpdatePrice($price,$numMonth, $id=0)
 function DeletePrice($id)
 {
     $conn=getConnection();
-    $query=sprintf("Delete %s where id=%d",PRICE_TABLE,$id);
+    $query=sprintf("Delete from %s where id = %d",PRICE_TABLE,$id);
     $result = mysql_query($query, $conn);
     if(!$result) {
         $errMsg = "Error retrieving order: " . mysql_error($conn);

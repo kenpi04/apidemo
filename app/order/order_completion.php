@@ -56,7 +56,7 @@ if(isset($_GET['success'])) {
 		$message = "Your payment was cancelled.";
                 
 	}
-	//unset($_SESSION['orderinfo']);
+	unset($_SESSION['orderinfo']);
 }
 ?>
 <!DOCTYPE html>

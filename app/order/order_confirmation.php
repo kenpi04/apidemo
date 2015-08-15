@@ -15,8 +15,6 @@ if (!isOrdered()) {
 $amount=0;
 $description="";
 $prices=getPriceById($orderInfo['price_id']);
-print_r($prices)
-exit();
 if(!$prices)
 {
     $errorMessage="Processing error! License type not found";

@@ -28,10 +28,20 @@ if(isset($_GET['success'])) {
             }
             else
 			{
-          
+          				
 					try {	
-			           	
-						$keyresult = insertKey($orderinfo["email"], $orderinfo["ime"], $orderinfo["deviceid"], $orderinfo["devicetype"],$payerId,$orderinfo['daylimit'],$orderinfo['price']);
+						$extent="";
+						
+			           	if(isset($orderinfo["key"]))
+			           	{
+			           		$keyresult=updateKey($orderinfo["key"],$orderinfo["daylimit"],$orderinfo["price"],$payerId);
+			           		
+			           		$extent="had been extentsion successfull!";				
+			           	}
+			           	else
+			           	{
+							$keyresult = insertKey($orderinfo["email"], $orderinfo["ime"], $orderinfo["deviceid"], $orderinfo["devicetype"],$payerId,$orderinfo['daylimit'],$orderinfo['price']);
+						}
 						if(!$keyresult)
 						{
 							throw new Exception("Error when processing! Please contact admin");
@@ -39,7 +49,9 @@ if(isset($_GET['success'])) {
 						}
 						$payment = executePayment($orderinfo['payment_id'],$payerId);  
 						$messageType = "success";                       
-						$message = "Your payment was successful. Your license key is <strong style='color:red'> $keyresult</strong>."; 
+						$message = "Your payment was successful. Your license key is <strong style='color:red'> $keyresult</strong>";
+						if($extent!="")
+							$message.=" ".$extent; 
 						
 				} catch (\PayPal\Exception\PPConnectionException $ex) {
 						$message = parseApiError($ex->getData());

@@ -28,7 +28,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
 				$id=(int)$_POST["key"]["id"];
 			}
 
-			InsertUpdatePrice((int)$_POST["key"]['month'],$_POST["key"]["price"],$id);
+			InsertUpdatePrice($_POST["key"]["price"],(int)$_POST["key"]['month'],$id);
 
 			
 		} else {

@@ -119,6 +119,17 @@ if($_SERVER['REQUEST_METHOD'] == 'GET') {
 					<td><?php echo $key['key_code'] ?></td>
 					<td><?php echo $key['CreateDate'] ?></td>
 					<td><?php echo $key['DateLimit'] ?> </td>
+							<td><?php $i= (int)$key['Type'] ;
+								if($i==0)
+									echo "Android";
+								else if($i==1)
+									echo "IOS";
+								else
+									echo "Window phone";
+
+
+							?> </td>
+
 					<td><?php echo $key['PayerId'] ?></td>
 				</tr>
 				<?php }?>

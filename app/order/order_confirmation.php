@@ -15,6 +15,8 @@ if (!isOrdered()) {
 $amount=0;
 $description="";
 $prices=getPriceById($orderInfo['price_id']);
+$keyData=array();
+
 if(!$prices)
 {
     $errorMessage="Processing error! License type not found";
@@ -22,6 +24,25 @@ if(!$prices)
 }
 else
 {
+    try {
+        
+        if(isset($orderInfo["key"]))
+        {
+                $keyData=getKeyById($orderInfo["key"]);
+             
+                if(!$keyData)
+                {
+                       throw new Exception("Key not exits", 1);
+                }
+               
+                
+        }
+
+        
+    } catch (Exception $e) {
+        $errorMessage=$e->getMessage();
+    $messageType = "error";  
+    }
 
 $amount = $prices['Price'];
 $description =  $prices["MonthNumber"]." Months";
@@ -87,6 +108,27 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <form accept-charset="UTF-8" method="post" action="order_confirmation.php"
                   class="simple_form form-horizontal new_order" id="order"
                   method="post" novalidate="novalidate">
+
+                <?php if($keyData){ ?>
+                    <h4>Your license info</h3>
+                     <div class='control-group'>
+                    <label class="string control-label">Active date</label>
+                    <div class='controls'>
+                        <span><?php echo $keyData["CreateDate"] ?> </span>
+
+                    </div>
+                    </div>
+                     <div class='control-group'>
+                    <label class="string control-label">Expire date</label>
+                    <div class='controls'>
+                        <span><?php echo $keyData["DateLimit"] ?> </span>
+                        
+                    </div>
+                </div>
+
+                <?php } ?>
+                <h4>Order infomation</h4>
+
                 <div class='control-group'>
                     <label class="string optional control-label" for="order_amount">Prices</label>
                     <div class='controls'>
@@ -103,7 +145,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
                 <div class='form-actions'>
                     <input class="btn btn btn-primary" name="commit" type="submit"
-                           value="Place Order" />
+                           value="<?php echo  (!$keyData?"Place Order":"Extension") ?>" />
                 </div>
             </form>
 <?php include '../footer.php'; ?>

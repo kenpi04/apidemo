@@ -37,12 +37,19 @@ function generateRandomString() {
 }
 function getKey($email, $IME, $deviceId, $type) {
     $conn = getConnection();
-    $query = sprintf("SELECT top 1 key FROM %s WHERE type=%d and email='%s' and ime_code='%s' and device_Id='%s'", KEY_TABLE, $type, mysql_real_escape_string($email), mysql_real_escape_string($IME), mysql_real_escape_string($deviceId)
+    $query = sprintf("SELECT * FROM %s WHERE type=%d and email='%s' and ime_code='%s' and device_Id='%s' limit 1", KEY_TABLE, $type, mysql_real_escape_string($email), mysql_real_escape_string($IME), mysql_real_escape_string($deviceId)
     );
-    $result = mysql_query($query, $conn);
-    $row = mysql_fetch_row($result);
+
+    $result = mysql_query($query, $conn);  
+    if (!$result) {
+                $errMsg = "Error: " . mysql_error($conn);
+                mysql_close($conn);
+                throw new Exception($errMsg);
+              
+            }
+    $row = mysql_fetch_assoc($result);
     mysql_close($conn);
-    return ($row[0]);
+    return $row;
 }
 function getIdFromKey($key)
 {
@@ -62,47 +69,7 @@ function getIdFromKey($key)
 
   return (int)str_replace('W','',$idStr);    
 }
-function updateKey($id,$paymentState,$payerId=null,$paymentStatetext=null)
-{ 
-    if($paymentState)
-    {
-       $keyCreate= generateRandomString($id);      
-        while (true) {
-            if(checkKeyExist($keyCreate))
-            {
-                $keyCreate=generateRandomString(25);
-            }
-            else
-            {
-                break;
-            }
-        }
-        $query=sprintf("update %s set Key_Code='%s',payerid='%s',PaymentState='%s' WHERE id=%d",KEY_TABLE,$keyCreate,$payerId,$paymentState,$id); 
-         $conn=getConnection();
-        $result = mysql_query($query, $conn);
-        if (!$result) {
-                $errMsg = "Error: " . mysql_error($conn);
-                mysql_close($conn);
-                throw new Exception($errMsg);
-              
-            }
-         mysql_close($conn);
-        return $keyCreate;
-    }
-    else{
-        $query=sprintf("delete %s WHERE id=%d",KEY_TABLE,$id);
-        
-        $result = mysql_query($query, $conn);
-        if (!$result) {
-                $errMsg = "Error: " . mysql_error($conn);
-                mysql_close($conn);
-                throw new Exception($errMsg);
-              
-            }
-         mysql_close($conn);
-    }
-    return null;
-}
+
 function checkKeyExist($key)
 {
     $conn=getConnection();
@@ -157,6 +124,43 @@ function insertKey($email, $IME, $deviceId, $type,$payerId,$dayLimit,$price) {
 
 
     
+}
+function updateKey($id,$dayLimit,$price,$payerid)
+{
+    $conn=getConnection();
+    $query=sprintf("Update %s set DateLimit =DATE_ADD(now(),INTERVAL %d DAY ),Price=%f,PayerId='%s' where id = %d",KEY_TABLE,$dayLimit,$price,$payerid,$id);
+    $result = mysql_query($query, $conn);    
+    if (!$result) {
+          
+        $errMsg = "Error: " . mysql_error($conn);
+        mysql_close($conn);
+        throw new Exception("Error Processing Request:".$errMsg, 1);
+        
+    } 
+     mysql_close($conn);
+         $key=getKeyById($id);   
+            
+        if($key)
+            return $key["key_code"];
+    return false;
+}
+function getKeyById($id)
+{
+
+        $conn = getConnection();
+    $query = sprintf("SELECT * FROM %s WHERE id=%d",
+            KEY_TABLE,
+            mysql_real_escape_string($id));
+    $result = mysql_query($query, $conn);
+    if(!$result) {
+        $errMsg = "Error retrieving order: " . mysql_error($conn);
+        mysql_close($conn);
+        throw new Exception($errMsg);
+    }
+
+    $row = mysql_fetch_assoc($result);
+    mysql_close($conn);
+    return $row;
 }
 
 function checkIp()

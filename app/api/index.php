@@ -6,15 +6,16 @@
 session_start();
 session_write_close();
 require_once __DIR__ . '/../bootstrap.php';
-
+error_reporting(E_ERROR | E_WARNING | E_PARSE | E_NOTICE);
 
 if($_SERVER['REQUEST_METHOD'] == 'POST') {	
     
 	
     try {
-      checkIp();
-       // if(!isNull($_POST['data']))
-      if(false)
+    
+     
+        if(!isNull($_POST['data']))
+    
         {
             $string = preg_replace("/[\r\n]+/", " ", base64_decode($_POST['data']));
             $json = utf8_encode($string);
@@ -43,8 +44,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
                 echo 'block';
                 exit;
            }
-           print_r($_SESSION["LIMIT_SESSION"]) ;
-           exit();
+           
            // $index=  getIdFromKey($_GET['key']);
            
           //  if($index==0)

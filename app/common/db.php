@@ -38,6 +38,14 @@ $tablePrice="CREATE TABLE IF NOT EXISTS `prices` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=7";
 
+$ips="CREATE TABLE IF NOT EXISTS `ip_request` (
+  `ip` varchar(30) NOT NULL,
+  `firstrequest` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `count` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+";
+
+
 	$link = @mysql_connect(MYSQL_HOST, MYSQL_USERNAME, MYSQL_PASSWORD);
 	if(!$link) {
 		throw new Exception('Could not connect to mysql ' . mysql_error() . PHP_EOL . 
@@ -50,5 +58,6 @@ $tablePrice="CREATE TABLE IF NOT EXISTS `prices` (
 	
 	mysql_query($tableKey, $link);
 	mysql_query($tablePrice,$link);
+  mysql_query($ips,$link);
 	return $link;
 }

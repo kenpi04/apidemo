@@ -1,7 +1,6 @@
 <?php
 
 require_once __DIR__ . '/db.php';
-require_once "phpfastcache.php";
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -166,36 +165,44 @@ function getKeyById($id)
 
 function checkIp()
 {
+
+    $ip=getIp();
+   return (checkIpSql($ip)<10);
+
+
+/*
         $cache = phpFastCache();
           $ip=  getIp();
    $sessionLimitName='CACHE_'.$ip;
-   $cache->deleteMulti(array($sessionLimitName));
-
-    $cacheData=$cache->get($sessionLimitName);  
-    if(!isset($cacheData))
+ //  $cache->delete($sessionLimitName);
+    $cacheData=$cache->get($sessionLimitName); 
+    if($cacheData==null)
     {
+    
        
          $cache->set($sessionLimitName,['date'=> new DateTime(),'count'=>1,'ip'=>getIp()],60);
+
         return true;
     }
     else
     {
-
-       
+ 
+    
         
           $now=new DateTime();
-        $minute=0;//($now- $cacheData['date'])/60;
-
-        print_r($cacheData);
-        exit();
+       $A=date_diff($now,date_create($cacheData['date']));
+        $minute=$A->m;
+        //print_r($A->m);
+        //  print("arg");
+        //exit();
         if($minute>=5)
         {
-           $cache->deleteMulti(array($sessionLimitName));
+           $cache->delete($sessionLimitName);
             return true;
         }
         if($minute>1)
         {
-           $cache->deleteMulti(array($sessionLimitName));
+           $cache->deleteMulti($sessionLimitName);
             return true;
         }
         $count=(int)$cacheData["count"];
@@ -203,10 +210,10 @@ function checkIp()
         {
             return false;
         }      
-        if(minute<=1)
+        if($minute<=1)
         {
             $count++;
-             $cacheData=$count;
+             $cacheData["count"]=$count;
            $cache->set($sessionLimitName,$cacheData);
         }
        
@@ -215,7 +222,7 @@ function checkIp()
     }
 
     return true;
-    
+  */  
 }
 function getIp() {
     $ip = null;
@@ -349,4 +356,45 @@ function getPriceById($id)
      $row = mysql_fetch_assoc($result);
     mysql_close($conn);
     return $row;
+}
+function checkIpSql($ip)
+{
+    $conn=getConnection();
+    $query=sprintf("Select count,(TIME_TO_SEC(TIMEDIFF(now(),firstrequest))/60)minute from ip_request where ip= '%s' limit 1",$ip);
+    $result = mysql_query($query, $conn);
+ $row = mysql_fetch_assoc($result);
+    if($row!=null)
+    {
+
+         
+          $count=$row["count"];
+          mysql_close();
+        if($row["minute"]<1)
+        {
+            $query=sprintf("Update ip_request set count =count+1 where ip='%s'",$ip);
+            $count++;
+        }
+        else
+        {
+            if($row["minute"]>=5||$row["count"]<10)
+            {
+                 $query=sprintf("delete ip_request where ip='%s'",$ip);
+                 $count=0;
+            }
+
+        }
+       
+    }
+    else
+    {
+       
+        $query=sprintf("insert into ip_request(ip,count) values('%s',1)",$ip);
+        $count=1;
+    }
+     $conn=getConnection();
+     mysql_query($query, $conn);
+    mysql_close();
+    return $count;
+   
+
 }

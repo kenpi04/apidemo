@@ -1,6 +1,7 @@
 <?php
 
 require_once __DIR__ . '/db.php';
+require_once "phpfastcache.php";
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -165,36 +166,39 @@ function getKeyById($id)
 
 function checkIp()
 {
-    $sessionLimitName='LIMIT_SESSION';
-    $ip=  getIp();
-    if(!isset($_SESSION[$sessionLimitName]))
+        $cache = phpFastCache();
+          $ip=  getIp();
+   $sessionLimitName='CACHE_'.$ip;
+   $cache->deleteMulti(array($sessionLimitName));
+
+    $cacheData=$cache->get($sessionLimitName);  
+    if(!isset($cacheData))
     {
-        $_SESSION[$sessionLimitName]=['date'=> new DateTime(),'count'=>1,'ip'=>getIp()];
+       
+         $cache->set($sessionLimitName,['date'=> new DateTime(),'count'=>1,'ip'=>getIp()],60);
         return true;
     }
     else
     {
 
-        $session=$_SESSION[$sessionLimitName];
-        if($session['ip']!=getIp())
-        {
-            unset($_SESSION[$sessionLimitName]);
-            return true;
-        }
+       
+        
           $now=new DateTime();
-        $minute=($now-$session['date'])/60;
-        return $session['date'];
+        $minute=0;//($now- $cacheData['date'])/60;
+
+        print_r($cacheData);
+        exit();
         if($minute>=5)
         {
-            unset($_SESSION[$sessionLimitName]);
+           $cache->deleteMulti(array($sessionLimitName));
             return true;
         }
         if($minute>1)
         {
-            unset($_SESSION[$sessionLimitName]);
+           $cache->deleteMulti(array($sessionLimitName));
             return true;
         }
-        $count=(int)$session["count"];
+        $count=(int)$cacheData["count"];
         if($count>=9)
         {
             return false;
@@ -202,13 +206,14 @@ function checkIp()
         if(minute<=1)
         {
             $count++;
-             $session["count"]=$count;
-            $_SESSION[$sessionLimitName]=$session;
+             $cacheData=$count;
+           $cache->set($sessionLimitName,$cacheData);
         }
        
         return true;
         
     }
+
     return true;
     
 }
@@ -238,6 +243,7 @@ function getkeyByKey($id)
 
     $row = mysql_fetch_assoc($result);
     mysql_close($conn);
+
     return $row;
 }
 function validateLogin($username,$password)

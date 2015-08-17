@@ -106,6 +106,7 @@ if($_SERVER['REQUEST_METHOD'] == 'GET') {
 					<th>Key</th>
 					<th>Active Date</th>
 					<th>End Date</th>
+					<th>Device type</th>
 					<th>Payment Id</th>
 				</tr>
 			</thead>			

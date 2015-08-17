@@ -3,15 +3,18 @@
  * Store user is redirected here once he has chosen
  * a payment method. 
  */
-require_once __DIR__ . '/../bootstrap.php';
 session_start();
-error_reporting(E_ALL ^ (E_NOTICE | E_WARNING));  
+session_write_close();
+require_once __DIR__ . '/../bootstrap.php';
+
 
 if($_SERVER['REQUEST_METHOD'] == 'POST') {	
     
 	
     try {
-        if(!isNull($_POST['data']))
+      checkIp();
+       // if(!isNull($_POST['data']))
+      if(false)
         {
             $string = preg_replace("/[\r\n]+/", " ", base64_decode($_POST['data']));
             $json = utf8_encode($string);
@@ -27,6 +30,8 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
                 
                 )
         { 
+         
+
 
             if(strcmp(API_USER, $data->{'user'})!=0||strcmp(API_PASSWORD, $data->{'password'})!=0)
             {
@@ -38,6 +43,8 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
                 echo 'block';
                 exit;
            }
+           print_r($_SESSION["LIMIT_SESSION"]) ;
+           exit();
            // $index=  getIdFromKey($_GET['key']);
            
           //  if($index==0)
@@ -45,7 +52,8 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
            //     echo 'false';
            //     exit;
            // }
-            $keys=  getkeyByKey($data->{'key'});          
+            $keys=  getkeyByKey($data->{'key'});   
+
             if(!$keys)
             {
                 
@@ -81,6 +89,6 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
         echo 'Error: $ex';
         exit;
     }
-   echo 'false';
+  // echo 'false';
 }
-  echo 'false';
+  //echo 'false';

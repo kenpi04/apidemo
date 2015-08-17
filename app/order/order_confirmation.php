@@ -25,11 +25,10 @@ if(!$prices)
 else
 {
     try {
-        
+      
         if(isset($orderInfo["key"]))
         {
-                $keyData=getKeyById($orderInfo["key"]);
-             
+                $keyData=getKeyById($orderInfo["key"]);              
                 if(!$keyData)
                 {
                        throw new Exception("Key not exits", 1);

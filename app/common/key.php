@@ -128,7 +128,7 @@ function insertKey($email, $IME, $deviceId, $type,$payerId,$dayLimit,$price) {
 function updateKey($id,$dayLimit,$price,$payerid)
 {
     $conn=getConnection();
-    $query=sprintf("Update %s set DateLimit =DATE_ADD(now(),INTERVAL %d DAY ),Price=%f,PayerId='%s' where id = %d",KEY_TABLE,$dayLimit,$price,$payerid,$id);
+    $query=sprintf("Update %s set CreateDate=now(), DateLimit =DATE_ADD(now(),INTERVAL %d DAY ),Price=%f,PayerId='%s' where id = %d",KEY_TABLE,$dayLimit,$price,$payerid,$id);
     $result = mysql_query($query, $conn);    
     if (!$result) {
           

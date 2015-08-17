@@ -9,7 +9,7 @@ unset($errorMessage);
 unset($keyresult);
 unset($_SESSION['orderinfo']);
 // Sign in form postback
-if($_SERVER['REQUEST_METHOD'] == 'GET') {
+
 
 	try{
 			$pricesList=getPriceList();
@@ -20,10 +20,13 @@ if($_SERVER['REQUEST_METHOD'] == 'GET') {
 		$errorMessage=$ex->getMessage();
 	}
 
-}
+
 
 if($_SERVER['REQUEST_METHOD'] == 'POST') {
-	try {         	
+	try {    
+
+			if($_POST["type_register"]=="1")
+			{     	
              if(!isNull($_POST['reg']['email'])
              	&&!isNull($_POST['reg']['ime'])
              	&&!isNull($_POST['reg']['deviceid'])
@@ -33,7 +36,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
              {
              		$daynumberLimit=(int)$_POST['reg']['monthnumber']*30;
              		$data=['email'=>$_POST['reg']['email'],'ime'=>$_POST['reg']['ime'],'deviceid'=>$_POST['reg']['deviceid'],'devicetype'=>$_POST['reg']['devicetype'],
-						'creditcard_id'=>$creditCardId,'id'=>base64_encode($_POST['reg']['ime']),'price_id'=>$_POST['reg']['licensetype']
+						'id'=>base64_encode($_POST['reg']['ime']),'price_id'=>$_POST['reg']['licensetype']
 							];
              					setOrderInfo($data);		
              				header("Location: ./order/order_confirmation.php");
@@ -44,6 +47,28 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
              {
              	$errorMessage = "Fail, Please check your info!";
              }
+         }
+         else
+         {
+         	if(!isNull($_POST["reg"]["key"])&&!isNull($_POST['reg']['licensetype']))
+         	{
+         		$key=getkeyByKey($_POST["reg"]["key"]);
+         		if(!$key)
+         		{
+         			$errorMessage="Key not exits!";
+         		}
+         		else {
+         			# code...
+
+             		$daynumberLimit=(int)$_POST['reg']['monthnumber']*30;
+             		$data=['id'=>base64_encode($_POST['reg']['ime']),'price_id'=>$_POST['reg']['licensetype'],'key'=>$key["id"]];
+             					setOrderInfo($data);		
+             				header("Location: ./order/order_confirmation.php");
+             				exit;
+
+         		}
+         	}
+         }
 
 		
 	} catch (Exception $ex) {
@@ -70,7 +95,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
 <body>
 	<?php include 'navbar.php';?>
 	<div class='container' id='content'>
-		<h2>Payment Key</h2>
+		<h2>Purchase Key</h2>
 		<?php if(isset($errorMessage)) {?>
 		<div class="alert fade in alert-error">
 			<button class="close" data-dismiss="alert">&times;</button>
@@ -85,8 +110,24 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
                 
 		<form  accept-charset="UTF-8" action="index.php"
 			class="simple_form form-horizontal new_user" id="new_user"
-			method="post" novalidate="novalidate">		
+			method="post" novalidate="novalidate">	
+
+			
+
 			 <legend>Your device infomation </legend>	
+			 <div class="control-group email optional">
+				
+				<div class="controls">
+					<div class="radio">
+					<label for="new_key"><input type="radio" id="new_key" checked="checked" name="type_register" value="1">Purchase new key</label>
+					</div>
+					<div class="radio">
+					<label class="" for="exst_key"><input id="exst_key" type="radio" name="type_register" value="2"> Extending exist key</label>
+					</div>
+
+				</div>
+			</div>
+			<div id="type_new">
 			<div class="control-group email optional">
 				<label class="email optional control-label" for="user_email"><abbr title="required">*</abbr>Email</label>
 				<div class="controls">
@@ -119,12 +160,22 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
                                     </select>
 				</div>
 			</div>	
+			</div>
+			<div id="type_exst" style="display:none">
+				<div class="control-group ime optional">
+				<label class="ime optional control-label" for="reg_key"><abbr title="required">*</abbr>Key</label>
+				<div class="controls">
+					<input class="ime required" id="reg_key"
+						name="reg[key]" size="20" max-length="50" type="text" />
+				</div>
+			</div>	
+			</div>
 			 <div class="control-group devicetype optional">
 				<label class="deviceid optional control-label" for="reg_devicetype">License type<abbr title="required">*</abbr></label>
 				<div class="controls">
                                     <select class="deviceid required" id="reg_licenseId"
                                         name="reg[licensetype]">
-                                        <option>Select license type</option>
+                                        <option data-price="-" value="">Select license type</option>
                                         <?php foreach ($pricesList as $key) {?>
                                         	 <option data-price="<?php echo $key['Price'] ?>" value="<?php echo $key['id'] ?>"><?php echo $key['MonthNumber'] ?> Months</option>   
                                        <?php }?>
@@ -141,7 +192,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
 			</div>	
 			
 			<div class='form-actions'>
-				<input class="btn btn btn-primary" name="commit" type="submit"
+				<input class="btn btn btn-primary" id="btnSubmit" name="commit" type="submit"
 					value="Buy Key" />
 			</div>
 		</form>
@@ -152,7 +203,22 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
 	<script src="../public/js/jquery.validate.min.js" type="text/javascript"></script>
 	<script type="text/javascript">
 		$(function () {
-			// body...
+
+
+			$("input[name=type_register]").change(function(){
+					if($(this).val()=="1")
+					{
+						$("#type_new").show();
+						$("#type_exst").hide();
+						$("#btnSubmit").val("Buy Key")
+					}
+					else{
+						$("#type_new").hide();
+						$("#type_exst").show();
+						$("#btnSubmit").val("Extending key");
+					}
+			})
+			// binody...
 				$("#new_user").validate({
 
 					 highlight: function(element) {
@@ -162,12 +228,16 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
 		             unhighlight: function(element) {
 		                 $(element).removeClass("f_error");
 		               
-		             }
+		             },
+		             ignore:":hidden"
 
 				});
 				$("#reg_licenseId").change(function(){
 					var price= $("#reg_licenseId option:selected").attr("data-price");
+					if(price!="-")
 					$("#span-price").html("$"+price);
+				else
+					$("#span-price").html("-");
 				})
 
 		})

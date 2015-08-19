@@ -369,14 +369,14 @@ function checkIpSql($ip)
          
           $count=$row["count"];
           mysql_close();
-        if($row["minute"]<1)
+        if($row["minute"]<1&&$row["count"]<=10)
         {
             $query=sprintf("Update ip_request set count =count+1 where ip='%s'",$ip);
             $count++;
         }
         else
         {
-            if($row["minute"]>=5||$row["count"]<10)
+            if($row["minute"]>=5||$row["count"]<=10)
             {
                  $query=sprintf("delete ip_request where ip='%s'",$ip);
                  $count=0;

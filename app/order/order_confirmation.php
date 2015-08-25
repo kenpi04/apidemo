@@ -44,7 +44,7 @@ else
     }
 
 $amount = $prices['Price'];
-$description = "Liscense type:  ".$prices["MonthNumber"]." Months - $".$amount;
+$description = $prices["MonthNumber"]." Months";
  $_SESSION['orderinfo']['price']=$amount;
  $_SESSION['orderinfo']['daylimit']=(int)$prices['MonthNumber']*30;
 
@@ -67,7 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 // Create the payment and redirect buyer to paypal for payment approval. 
         if (isset($id)) {
             $baseUrl = getBaseUrl() . "/order_completion.php?orderid=$id";
-            $payment = makePaymentUsingPayPal($order['amount'], 'USD', $description, "$baseUrl&success=true", "$baseUrl&success=false");
+            $payment = makePaymentUsingPayPal($order['amount'], 'USD',sprintf("Payment license %s Months - $%s ",$prices["MonthNumber"],$order['amount']), "$baseUrl&success=true", "$baseUrl&success=false");
             $_SESSION['orderinfo']['payment_id']=$payment->getId();
             header("Location: " . getLink($payment->getLinks(), "approval_url"));
             exit;

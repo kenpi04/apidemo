@@ -44,7 +44,7 @@ else
     }
 
 $amount = $prices['Price'];
-$description =  $prices["MonthNumber"]." Months";
+$description = "Liscense type:  ".$prices["MonthNumber"]." Months - $".$amount;
  $_SESSION['orderinfo']['price']=$amount;
  $_SESSION['orderinfo']['daylimit']=(int)$prices['MonthNumber']*30;
 
@@ -67,7 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 // Create the payment and redirect buyer to paypal for payment approval. 
         if (isset($id)) {
             $baseUrl = getBaseUrl() . "/order_completion.php?orderid=$id";
-            $payment = makePaymentUsingPayPal($order['amount'], 'USD', $order['description'], "$baseUrl&success=true", "$baseUrl&success=false");
+            $payment = makePaymentUsingPayPal($order['amount'], 'USD', $description, "$baseUrl&success=true", "$baseUrl&success=false");
             $_SESSION['orderinfo']['payment_id']=$payment->getId();
             header("Location: " . getLink($payment->getLinks(), "approval_url"));
             exit;
@@ -143,8 +143,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 </div>
 
                 <div class='form-actions'>
-                    <input class="btn btn btn-primary" name="commit" type="submit"
-                           value="<?php echo  (!$keyData?"Place Order":"Extension") ?>" />
+
+                    <input style="background:url(https://www.paypalobjects.com/webstatic/en_AU/i/buttons/btn_paywith_primary_l.png);    width: 228px;
+    height: 44px;
+" class="btn btn btn-primary" name="commit" type="submit"
+                           value="" />
                 </div>
             </form>
 <?php include '../footer.php'; ?>
